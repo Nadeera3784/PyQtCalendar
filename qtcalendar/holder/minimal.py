@@ -1,7 +1,7 @@
 '''
     Simple class for widget visualization
 '''
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets
 import sys
 
 
@@ -17,20 +17,18 @@ class MinimalHolder:
         sys.exit(self.app.exec_())
         self.frame.end()
 
+    def getMainLayout(self):
+        return self.main_layout
+
     def setupUI(self, window):
         window.setObjectName('MinimalHolder')
-        window.resize(876, 600)  # w, h
+        window.resize(200, 200)  # w, h
 
         # Create a central widget to place calendar
         self.central_holder = QtWidgets.QWidget(window)
         self.central_holder.setObjectName('centralholder')
 
+        self.main_layout = QtWidgets.QVBoxLayout()
+        self.central_holder.setLayout(self.main_layout)
+
         window.setCentralWidget(self.central_holder)
-
-        # Apply translations
-        self.retranslateUI(window)
-        QtCore.QMetaObject.connectSlotsByName(window)
-
-    def retranslateUI(self, window):
-        _translate = QtCore.QCoreApplication.translate
-        window.setWindowTitle(_translate('MinimalHolder', 'PyQtCalendar Test'))
