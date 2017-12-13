@@ -41,3 +41,7 @@ class EventInCalendar__View(QtWidgets.QLabel):
     def updateStatus(self):
         color = 'background-color: ' + self.master.getModel().getFulFillmentStatus()
         self.setStyleSheet(color)
+
+    def updateFromModel(self):
+        self.setText(self.master.getModel().__str__())
+        self.updateStatus()
