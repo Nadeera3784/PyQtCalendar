@@ -85,3 +85,49 @@ class Event__Model:
 
     def getPlace(self):
         return self._place
+
+
+class Date__Model:
+    TYPE_WEEKDAY = 0
+    TYPE_WEEKEND = 1
+    TYPE_HOLYDAY = 2
+    TYPE_FREEDAY = 3
+
+    @staticmethod
+    def colorOf(val):
+        color_list = [
+            (Date__Model.TYPE_WEEKDAY, 'rgb(183, 183, 183)'),
+            (Date__Model.TYPE_WEEKEND, 'rgb(0, 242, 255)'),
+            (Date__Model.TYPE_HOLYDAY, 'rgb(0, 242, 255)'),
+            (Date__Model.TYPE_FREEDAY, 'rgb(0, 216, 255)'),
+        ]
+
+        for d, c in color_list:
+            if d == val:
+                return c
+        return color_list[0][1]
+
+    def __init__(self, master, date):
+        self._master = master
+
+        self._events = list()
+        self._date = date
+        self._date_type = None
+
+    def setDate(self, date, datetype=TYPE_WEEKDAY):
+        self._date = date
+        self._date_type = datetype
+
+    def getDate(self):
+        return self._date
+
+    def getDateType(self, numeric=False):
+        if numeric is False:
+            return Date__Model.colorOf(self._date_type)
+        return self._date_type
+
+    def addEvent(self, event):
+        self._events.append(event)
+
+    def getEvents(self):
+        return self._events
