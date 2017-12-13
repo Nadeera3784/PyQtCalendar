@@ -6,6 +6,15 @@ class Element:
     pass
 
 
+class Event:
+    def __init__(self, init_date, end_date):
+        self._model = models.Event__Model(
+            init_date, end_date, models.Event__Model.Place())
+
+    def getModel(self):
+        return self._model
+
+
 class EventInCalendar(Element):
     '''
         EventInCalendar interface intended for usage in Date class, or for subclassing.
@@ -34,7 +43,7 @@ class EventInCalendar(Element):
 
         # Recursively set the event
         self._model.setEvent(event)
-        self._view
+        self._view.updateFromModel()
 
 
 class Date(Element):
