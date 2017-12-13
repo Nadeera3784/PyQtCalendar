@@ -45,3 +45,60 @@ class EventInCalendar__View(QtWidgets.QLabel):
     def updateFromModel(self):
         self.setText(self.master.getModel().__str__())
         self.updateStatus()
+
+
+class Date__View(QtWidgets.QWidget):
+    '''
+        Date View of a date in the calendar, this element contains the EventInCalendar
+        widgets and subclasses the QtWidgets.QWidget class
+    '''
+
+    def __init__(self, master):
+        super(Date__View, self).__init__()
+
+        # Date will organize events one on top of another vertically, so we will use
+        # QVBoxLayout
+        self.setLayout(QtWidgets.QVBoxLayout())
+
+        # Instance master for later use
+        self._master = master
+
+        # Date number
+        self._date = QtWidgets.QLabel()
+
+        self.update()
+
+    def update(self):
+        model = self.master.getModel()
+        date = model.getDate().__str__()
+        date = date.split('-')[0]
+
+        # Remove leading zero
+        if date and date[0] == '0':
+            date = date[1:]
+
+        # Update label
+        self._date.setText(date)
+
+        # Change background to reflect new datetype
+        cdatetype = model.getDateType()
+
+        color = 'background-color: ' + cdatetype
+        self.setStyleSheet(color)
+
+        # Remove all current EventsInDate from the view only
+        events = model.getEvents()
+        for event in events:
+            if event in self.layout.children():
+                self.layout.removeWidget(event.getView())
+
+        # Reorganize EventsInDate, sort by time, ascending
+        events = model.getEvents()
+        events.sort()
+
+        # Add them back
+        for event in events:
+            self.layout.addWidget(event)
+
+    def updateFromModel(self):
+        self.update()
