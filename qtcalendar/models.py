@@ -10,10 +10,15 @@ class EventInCalendar__Model:
         def getDefault():
             return EventInCalendar__Model.Text()
 
-        def __init__(self):
-            self.init_date = dt.datetime(1, 1, 1)
-            self.end_date = dt.datetime(9999, 12, 31)
-            self.place = Event__Model.Place()
+        def __init__(self, event=None):
+            if event is None:
+                self.init_date = dt.datetime(1, 1, 1)
+                self.end_date = dt.datetime(9999, 12, 31)
+                self.place = Event__Model.Place()
+            else:
+                self.init_date = event.getInitDate()
+                self.end_date = event.getEndDate()
+                self.place = event.getPlace()
 
         def __str__(self):
             init_time, end_time = self.init_date.time(), self.end_date.time()
@@ -34,13 +39,24 @@ class EventInCalendar__Model:
             if lw <= val and hi > val:
                 return c
 
-    def __init__(self):
-        self._fulfillment = 1.0
+    def __init__(self, master):
+        self._fulfillment = 0.0
+        self._master = master
+        self._event = None
 
     def getFulFillmentStatus(self, numeric=False):
         if not numeric:
             return EventInCalendar__Model.colorOf(self._fulfillment)
         return self._fulfillment
+
+    def setEvent(self, event):
+        self._event = event.getModel()
+        self._fulfillment = self._event.getFulFillmentStatus()
+
+    def __str__(self):
+        if self._event is None:
+            return EventInCalendar__Model.Text()
+        return EventInCalendar__Model.Text(self._event)
 
 
 class Event__Model:
@@ -51,3 +67,21 @@ class Event__Model:
 
         def __str__(self):
             return self.name
+
+    def __init__(self, init_date, end_date, place):
+        self._init_date = init_date
+        self._end_date = end_date
+        self._place = place
+        self._fulfillment
+
+    def getFulFillmentStatus(self):
+        return self._fulfillment
+
+    def getInitDate(self):
+        return self._init_date
+
+    def getEndDate(self):
+        return self._end_date
+
+    def getPlace(self):
+        return self._place
