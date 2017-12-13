@@ -55,8 +55,8 @@ class EventInCalendar__Model:
 
     def __str__(self):
         if self._event is None:
-            return EventInCalendar__Model.Text()
-        return EventInCalendar__Model.Text(self._event)
+            return EventInCalendar__Model.Text().__str__()
+        return EventInCalendar__Model.Text(self._event).__str__()
 
 
 class Event__Model:
@@ -72,7 +72,7 @@ class Event__Model:
         self._init_date = init_date
         self._end_date = end_date
         self._place = place
-        self._fulfillment
+        self._fulfillment = 0.0
 
     def getFulFillmentStatus(self):
         return self._fulfillment
@@ -112,7 +112,7 @@ class Date__Model:
 
         self._events = list()
         self._date = date
-        self._date_type = None
+        self._date_type = Date__Model.TYPE_WEEKDAY
 
     def setDate(self, date, datetype=TYPE_WEEKDAY):
         self._date = date
