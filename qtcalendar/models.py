@@ -190,6 +190,10 @@ class Calendar__Model:
             always be full, thus, initialy an array of empty dates (6x7), is
             array is called holders;  a second empty array of dates is created
             and will replace eventually the dates of the respective holder date.
+
+            Both arrays are validated through a snapshot array, the snapshot refers
+            to the dates that fill the Calendar grid for a current month, be those
+            dates from the actual month or the adjacent months
         '''
         self._master = master
         self._type = ctype
@@ -197,10 +201,10 @@ class Calendar__Model:
         # Assume month as current month
         self._month = tuple([dt.date.today().year, dt.date.today().month])
 
-        self._holders = self.generateHolderArray()
+        self._snapshot = self.generateSnapshot()
         self._dates = list()
 
-    def generateHolderArray(self):
+    def generateSnapshot(self):
         rt = list()
 
         if self._month is None:
