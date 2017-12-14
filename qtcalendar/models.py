@@ -1,7 +1,10 @@
 '''
     Models for QtWidgets
 '''
+from collections import deque
+from math import ceil
 import datetime as dt
+import calendar
 
 
 class EventInCalendar__Model:
@@ -131,3 +134,61 @@ class Date__Model:
 
     def getEvents(self):
         return self._events
+
+
+class Calendar__Model:
+    TYPE_MONDAY_LEADING = 0
+    TYPE_TUESDAY_LEADING = 1
+    TYPE_WEDNESDAY_LEADING = 2
+    TYPE_THURSDAY_LEADING = 3
+    TYPE_FRIDAY_LEADING = 4
+    TYPE_SATURDAY_LEADING = 5
+    TYPE_SUNDAY_LEADING = 6
+
+    @staticmethod
+    def dayOf(date, init):
+        '''
+            Returns the day of the week of a given date and the position
+            of that day in the calendar grid.
+            The returned text value of the day is recovered from the stringer module.
+        '''
+        days = [
+            (0, 'Lunes'),
+            (1, 'Martes'),
+            (2, 'Miércoles'),
+            (3, 'Jueves'),
+            (4, 'Viernes'),
+            (5, 'Sábado'),
+            (6, 'Domingo'),
+        ]
+
+        # Get the day of the week of the selected date
+        datetuple = tuple([int(s) for s in str(date).split(' ')[0].split('-')])
+        day = days[list(zip(*days))[0].index(calendar.weekday(*datetuple))][1]
+
+        # Horizontal position in the grid is deduced from the selected leading day
+        days_dq = deque(days)
+        days_dq.rotate(7 - init)
+        pos_x = list(zip(*days_dq))[0].index(calendar.weekday(*datetuple))
+
+        # Vertical position is deduced from the selected leading day and the
+        # day of the first date of that month
+        firstmonthday = (datetuple[0], datetuple[1], 1)
+        fday = list(zip(*days_dq))[0].index(calendar.weekday(*firstmonthday))
+
+        pos_y = ceil((fday + init) / 7) - 1
+
+        # Return the place in the calendar grid depending on the offset
+        return day, pos_x, pos_y
+
+    def __init__(self, master, ctype=TYPE_SUNDAY_LEADING):
+        self._master = master
+        self._type = ctype
+
+    def setHolydays(self, source):
+        pass
+
+
+if __name__ == '__main__':
+    print(dt.date(2017, 12, 7))
+    print(Calendar__Model.dayOf(dt.date(2017, 12, 3), 0))
