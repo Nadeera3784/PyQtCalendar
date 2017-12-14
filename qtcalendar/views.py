@@ -109,3 +109,21 @@ class Date__View(QtWidgets.QWidget):
 
     def updateFromModel(self):
         self.update()
+
+
+class Calendar__View(QtWidgets.QWidget):
+
+    def __init__(self, master, parent=None):
+        QtWidgets.QWidget.__init__(self, parent=parent)
+        self._master = master
+
+        # Date will organize events one on top of another vertically, so we will use
+        # QVBoxLayout
+        self._layout = QtWidgets.QGridLayout()
+        self.setLayout(self._layout)
+
+    def upate(self):
+        model = self._master.getModel()
+
+    def updateFromModel(self):
+        self.update()
