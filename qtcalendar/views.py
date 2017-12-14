@@ -28,8 +28,6 @@ class EventInCalendar__View(QtWidgets.QLabel):
 
         self.master = master
 
-        self.setMaximumHeight(50)
-
     def setText(self, richtext):
         '''
             Overrides super.setText. Here richtext is EventInCalendar__Model.Text class
@@ -70,14 +68,14 @@ class Date__View(QtWidgets.QWidget):
 
         # Date number
         self._date = QtWidgets.QLabel()
+        self._layout.addWidget(self._date)
 
-        self.setMinimumHeight(200)
         self.update()
 
     def update(self):
         model = self._master.getModel()
         date = model.getDate().__str__()
-        date = date.split('-')[0]
+        date = date.split(' ')[0].split('-')[2]
 
         # Remove leading zero
         if date and date[0] == '0':
