@@ -1,5 +1,5 @@
 from holder.minimal import MinimalHolder
-from calendar import EventInCalendar, Date, Event
+from entities import EventInCalendar, Date, Event
 import datetime as dt
 
 ui = MinimalHolder()
