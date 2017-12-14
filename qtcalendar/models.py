@@ -145,6 +145,9 @@ class Calendar__Model:
     TYPE_SATURDAY_LEADING = 5
     TYPE_SUNDAY_LEADING = 6
 
+    MAX_DIM_X = 7
+    MAX_DIM_Y = 6
+
     @staticmethod
     def dayOf(date, init):
         '''
@@ -176,19 +179,67 @@ class Calendar__Model:
         firstmonthday = (datetuple[0], datetuple[1], 1)
         fday = list(zip(*days_dq))[0].index(calendar.weekday(*firstmonthday))
 
-        pos_y = ceil((fday + init) / 7) - 1
+        pos_y = ceil(fday / 7) - 1
 
         # Return the place in the calendar grid depending on the offset
         return day, pos_x, pos_y
 
     def __init__(self, master, ctype=TYPE_SUNDAY_LEADING):
+        '''
+            Calendar constructor, a calendar is an array of dates that should
+            always be full, thus, initialy an array of empty dates (6x7), is
+            array is called holders;  a second empty array of dates is created
+            and will replace eventually the dates of the respective holder date.
+        '''
         self._master = master
         self._type = ctype
+
+        # Assume month as current month
+        self._month = tuple([dt.date.today().year, dt.date.today().month])
+
+        self._holders = self.generateHolderArray()
+        self._dates = list()
+
+    def generateHolderArray(self):
+        rt = list()
+
+        if self._month is None:
+            return rt
+
+        # First day of month
+        first_day = dt.date(self._month[0], self._month[1], 1)
+
+        # Find day of first position in calendar grid
+        while Calendar__Model.dayOf(first_day, self._type)[1:] != (0, 0):
+            first_day -= dt.timedelta(1)
+
+        # Once first position is encountered, fill the holder array
+        for i in range(Calendar__Model.MAX_DIM_X * Calendar__Model.MAX_DIM_Y):
+            rt.append(first_day)
+            first_day += dt.timedelta(1)
+
+        return rt
+
+    def addDate(self, date):
+        if self._month is not None:
+            self._dates.append(date)
+
+    def setMonth(self, month):
+        self._month = month
+        self._recalculate()
 
     def setHolydays(self, source):
         pass
 
+    def getHolderDimensions(self):
+        return Calendar__Model.MAX_DIM_X, Calendar__Model.MAX_DIM_Y
+
+    def recalculate(self):
+        pass
+
 
 if __name__ == '__main__':
-    print(dt.date(2017, 12, 7))
-    print(Calendar__Model.dayOf(dt.date(2017, 12, 3), 0))
+    cal = Calendar__Model(None)
+
+    for h in cal._holders:
+        print(h)
