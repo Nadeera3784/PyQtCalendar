@@ -7,9 +7,9 @@ class Element:
 
 
 class Event:
-    def __init__(self, init_date, end_date):
+    def __init__(self, init_date, end_date, fulfillment=0.0):
         self._model = models.Event__Model(
-            init_date, end_date, models.Event__Model.Place())
+            init_date, end_date, models.Event__Model.Place(), fulfillment)
 
     def getModel(self):
         return self._model
@@ -44,6 +44,10 @@ class EventInCalendar(Element):
         # Recursively set the event
         self._model.setEvent(event)
         self._view.updateFromModel()
+
+    def __lt__(self, other):
+        return self.getEvent().getModel().getInitDate() \
+            < other.getEvent().getModel().getInitDate()
 
 
 class Date(Element):

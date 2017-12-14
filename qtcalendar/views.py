@@ -22,10 +22,12 @@ class EventInCalendar__View(QtWidgets.QLabel):
         The fulfillment criteria comes from the model function getFulFillmentStatus()
     '''
 
-    def __init__(self, master):
-        super(EventInCalendar__View, self).__init__()
+    def __init__(self, master, parent=None):
+        QtWidgets.QLabel.__init__(self, parent=parent)
 
         self.master = master
+
+        self.setMaximumHeight(50)
 
     def setText(self, richtext):
         '''
@@ -53,12 +55,13 @@ class Date__View(QtWidgets.QWidget):
         widgets and subclasses the QtWidgets.QWidget class
     '''
 
-    def __init__(self, master):
-        super(Date__View, self).__init__()
+    def __init__(self, master, parent=None):
+        QtWidgets.QWidget.__init__(self, parent=parent)
 
         # Date will organize events one on top of another vertically, so we will use
         # QVBoxLayout
-        self.setLayout(QtWidgets.QVBoxLayout())
+        self._layout = QtWidgets.QVBoxLayout()
+        self.setLayout(self._layout)
 
         # Instance master for later use
         self._master = master
@@ -66,10 +69,11 @@ class Date__View(QtWidgets.QWidget):
         # Date number
         self._date = QtWidgets.QLabel()
 
+        self.setMinimumHeight(200)
         self.update()
 
     def update(self):
-        model = self.master.getModel()
+        model = self._master.getModel()
         date = model.getDate().__str__()
         date = date.split('-')[0]
 
@@ -89,8 +93,10 @@ class Date__View(QtWidgets.QWidget):
         # Remove all current EventsInDate from the view only
         events = model.getEvents()
         for event in events:
-            if event in self.layout.children():
-                self.layout.removeWidget(event.getView())
+            try:
+                self._layout(event.getView())
+            except Exception:
+                pass
 
         # Reorganize EventsInDate, sort by time, ascending
         events = model.getEvents()
@@ -98,7 +104,7 @@ class Date__View(QtWidgets.QWidget):
 
         # Add them back
         for event in events:
-            self.layout.addWidget(event)
+            self._layout.addWidget(event.getView())
 
     def updateFromModel(self):
         self.update()

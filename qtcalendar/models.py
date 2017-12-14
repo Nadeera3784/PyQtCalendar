@@ -23,7 +23,7 @@ class EventInCalendar__Model:
         def __str__(self):
             init_time, end_time = self.init_date.time(), self.end_date.time()
 
-            return '  '.join([str(i) for i in [end_time, init_time, self.place]])
+            return '  '.join([str(i) for i in [init_time, end_time, self.place]])
 
     @staticmethod
     def colorOf(val):
@@ -68,11 +68,11 @@ class Event__Model:
         def __str__(self):
             return self.name
 
-    def __init__(self, init_date, end_date, place):
+    def __init__(self, init_date, end_date, place, fulfillment=0.0):
         self._init_date = init_date
         self._end_date = end_date
         self._place = place
-        self._fulfillment = 0.0
+        self._fulfillment = fulfillment
 
     def getFulFillmentStatus(self):
         return self._fulfillment
