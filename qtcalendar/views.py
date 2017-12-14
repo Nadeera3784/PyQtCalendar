@@ -3,6 +3,7 @@
 '''
 
 from PyQt5 import QtWidgets
+from PyQt5 import QtGui
 
 
 class EventInCalendar__View(QtWidgets.QLabel):
@@ -57,6 +58,7 @@ class Date__View(QtWidgets.QWidget):
 
     def __init__(self, master, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
+        self.setAutoFillBackground(True)
 
         # Date will organize events one on top of another vertically, so we will use
         # QVBoxLayout
@@ -87,8 +89,9 @@ class Date__View(QtWidgets.QWidget):
         # Change background to reflect new datetype
         cdatetype = model.getDateType()
 
-        color = 'background-color: ' + cdatetype
-        self.setStyleSheet(color)
+        p = self.palette()
+        p.setColor(self.backgroundRole(), QtGui.QColor(*cdatetype))
+        self.setPalette(p)
 
         # Remove all current EventsInDate from the view only
         events = model.getEvents()

@@ -96,10 +96,10 @@ class Date__Model:
     @staticmethod
     def colorOf(val):
         color_list = [
-            (Date__Model.TYPE_WEEKDAY, 'rgb(183, 183, 183)'),
-            (Date__Model.TYPE_WEEKEND, 'rgb(0, 242, 255)'),
-            (Date__Model.TYPE_HOLYDAY, 'rgb(0, 242, 255)'),
-            (Date__Model.TYPE_FREEDAY, 'rgb(0, 216, 255)'),
+            (Date__Model.TYPE_WEEKDAY, (163, 163, 163)),
+            (Date__Model.TYPE_WEEKEND, (0, 242, 255)),
+            (Date__Model.TYPE_HOLYDAY, (0, 242, 255)),
+            (Date__Model.TYPE_FREEDAY, (0, 216, 255)),
         ]
 
         for d, c in color_list:
