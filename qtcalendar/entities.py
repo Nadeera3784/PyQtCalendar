@@ -83,3 +83,23 @@ class Date(Element):
     def changeDateType(self, datetype):
         self._model.setDate(self._model.getDate(), datetype)
         self._view.updateFromModel()
+
+
+class Calendar(Element):
+    '''
+        Calendar superclass, manages Dates and the overall language pack.
+    '''
+
+    def __init__(self):
+        self._model = models.Calendar__Model(self)
+        self._view = views.Calendar__View(self)
+
+    def getView(self):
+        return self._view
+
+    def getModel(self):
+        return self._model
+
+    def addDate(self, date):
+        self._model.addDate(date)
+        self._view.updateFromModel()
