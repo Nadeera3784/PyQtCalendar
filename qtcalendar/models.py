@@ -237,7 +237,8 @@ class Calendar__Model:
     def addDate(self, date):
         if self._month is not None:
             if date.getModel().getDate() in self._snapshot:
-                self._dates.append(date)
+                index = self._snapshot.index(date.getModel().getDate())
+                self._dates[index] = date
 
     def setMonth(self, month):
         self._month = month
