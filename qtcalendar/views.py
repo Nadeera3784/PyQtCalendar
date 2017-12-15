@@ -4,6 +4,7 @@
 
 from PyQt5 import QtWidgets
 from PyQt5 import QtGui
+from math import ceil
 
 
 class EventInCalendar__View(QtWidgets.QLabel):
@@ -122,8 +123,18 @@ class Calendar__View(QtWidgets.QWidget):
         self._layout = QtWidgets.QGridLayout()
         self.setLayout(self._layout)
 
-    def upate(self):
+        # Set background
+        p = self.palette()
+        p.setColor(self.backgroundRole(), QtGui.QColor(255, 251, 186))
+        self.setPalette(p)
+
+    def update(self):
         model = self._master.getModel()
+
+        for date in model.getDates():
+            self._layout.addWidget(
+                date.getView(),
+                *model.posInSnapshot(date.getModel().getDate()))
 
     def updateFromModel(self):
         self.update()

@@ -148,42 +148,6 @@ class Calendar__Model:
     MAX_DIM_X = 7
     MAX_DIM_Y = 6
 
-    @staticmethod
-    def dayOf(date, init):
-        '''
-            Returns the day of the week of a given date and the position
-            of that day in the calendar grid.
-            The returned text value of the day is recovered from the stringer module.
-        '''
-        days = [
-            (0, 'Lunes'),
-            (1, 'Martes'),
-            (2, 'Miércoles'),
-            (3, 'Jueves'),
-            (4, 'Viernes'),
-            (5, 'Sábado'),
-            (6, 'Domingo'),
-        ]
-
-        # Get the day of the week of the selected date
-        datetuple = tuple([int(s) for s in str(date).split(' ')[0].split('-')])
-        day = days[list(zip(*days))[0].index(calendar.weekday(*datetuple))][1]
-
-        # Horizontal position in the grid is deduced from the selected leading day
-        days_dq = deque(days)
-        days_dq.rotate(7 - init)
-        pos_x = list(zip(*days_dq))[0].index(calendar.weekday(*datetuple))
-
-        # Vertical position is deduced from the selected leading day and the
-        # day of the first date of that month
-        firstmonthday = (datetuple[0], datetuple[1], 1)
-        fday = list(zip(*days_dq))[0].index(calendar.weekday(*firstmonthday))
-
-        pos_y = ceil(fday / 7) - 1
-
-        # Return the place in the calendar grid depending on the offset
-        return day, pos_x, pos_y
-
     def __init__(self, master, ctype=TYPE_SUNDAY_LEADING):
         '''
             Calendar constructor, a calendar is an array of dates that should
@@ -201,8 +165,48 @@ class Calendar__Model:
         # Assume month as current month
         self._month = tuple([dt.date.today().year, dt.date.today().month])
 
+        # Generate the snapshot for the current month
         self._snapshot = self.generateSnapshot()
-        self._dates = list()
+
+        # Create empty dates from the snapshot
+        self._dates = self.generateDefaultDates()
+
+    def dayOf(self, date):
+        '''
+            Returns the day of the week of a given date and the position
+            of that day in the calendar grid.
+            The returned text value of the day is recovered from the stringer module.
+        '''
+        days = [
+            (0, 'Lunes'),
+            (1, 'Martes'),
+            (2, 'Miércoles'),
+            (3, 'Jueves'),
+            (4, 'Viernes'),
+            (5, 'Sábado'),
+            (6, 'Domingo'),
+        ]
+
+        init = self._type
+
+        # Get the day of the week of the selected date
+        datetuple = tuple([int(s) for s in str(date).split(' ')[0].split('-')])
+        day = days[list(zip(*days))[0].index(calendar.weekday(*datetuple))][1]
+
+        # Horizontal position in the grid is deduced from the selected leading day
+        days_dq = deque(days)
+        days_dq.rotate(7 - init)
+        pos_x = list(zip(*days_dq))[0].index(calendar.weekday(*datetuple))
+
+        # Vertical position is deduced from the selected leading day and the
+        # day of the first date of that month
+        firstmonthday = (datetuple[0], datetuple[1], 1)
+        fday = list(zip(*days_dq))[0].index(calendar.weekday(*firstmonthday))
+
+        pos_y = ceil((fday + date.day) / 7) - 1
+
+        # Return the place in the calendar grid depending on the offset
+        return day, pos_x, pos_y
 
     def generateSnapshot(self):
         rt = list()
@@ -214,8 +218,8 @@ class Calendar__Model:
         first_day = dt.date(self._month[0], self._month[1], 1)
 
         # Find day of first position in calendar grid
-        while Calendar__Model.dayOf(first_day, self._type)[1:] != (0, 0):
-            first_day -= dt.timedelta(1)
+        offset = self.dayOf(first_day)[1]
+        first_day -= dt.timedelta(offset)
 
         # Once first position is encountered, fill the holder array
         for i in range(Calendar__Model.MAX_DIM_X * Calendar__Model.MAX_DIM_Y):
@@ -224,9 +228,16 @@ class Calendar__Model:
 
         return rt
 
+    def generateDefaultDates(self):
+        rt = list()
+        for date in self._snapshot:
+            rt.append(self._master.createDate(date))
+        return rt
+
     def addDate(self, date):
         if self._month is not None:
-            self._dates.append(date)
+            if date.getModel().getDate() in self._snapshot:
+                self._dates.append(date)
 
     def setMonth(self, month):
         self._month = month
@@ -235,15 +246,15 @@ class Calendar__Model:
     def setHolydays(self, source):
         pass
 
+    def posInSnapshot(self, date):
+        i = self._snapshot.index(date)
+        return ceil((i + 1) / 7) - 1, (i) % 7
+
     def getHolderDimensions(self):
         return Calendar__Model.MAX_DIM_X, Calendar__Model.MAX_DIM_Y
 
+    def getDates(self):
+        return self._dates
+
     def recalculate(self):
         pass
-
-
-if __name__ == '__main__':
-    cal = Calendar__Model(None)
-
-    for h in cal._holders:
-        print(h)

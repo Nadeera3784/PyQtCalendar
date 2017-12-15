@@ -94,6 +94,8 @@ class Calendar(Element):
         self._model = models.Calendar__Model(self)
         self._view = views.Calendar__View(self)
 
+        self._view.updateFromModel()
+
     def getView(self):
         return self._view
 
@@ -101,5 +103,8 @@ class Calendar(Element):
         return self._model
 
     def addDate(self, date):
-        self._model.addDate(date)
+        self._model.addDate(Date(date))
         self._view.updateFromModel()
+
+    def createDate(self, date):
+        return Date(date)
