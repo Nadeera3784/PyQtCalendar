@@ -1,0 +1,31 @@
+{
+	"OPCODES": {
+		"login": {
+			"name": "Login",
+			"description": "Authenticates a user for first time, or after the session has been closed"
+		}
+	},
+	"PERMISSION_LEVELS": {
+		"ROOT": {
+			"level": 999,
+			"description": "Super admin, with all permissions and privileges"
+		},
+		"MIN": {
+			"level": 0,
+			"description": "Minimum level of control, any decent system gives no control at this privilege level"
+		}
+	},
+	"ROLES": {
+		"root": {
+			"description": "Maximum control entity. Never work in this role, you could destroy yourself"
+		},
+		"intruder": {
+			"description": "Minimum control entity. Assign this role to the person who you want to limit the application use"
+		}
+	},
+	"NOTIFICATION_METHODS": {
+		"email": {
+			"description": "Notify the user about events or situations through the email registered in the system"
+		}
+	}
+}

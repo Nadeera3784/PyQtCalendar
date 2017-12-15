@@ -2,9 +2,10 @@
     Views for calendar Widgets
 '''
 
+from collections import deque
 from PyQt5 import QtWidgets
+from PyQt5 import QtCore
 from PyQt5 import QtGui
-from math import ceil
 
 
 class EventInCalendar__View(QtWidgets.QLabel):
@@ -114,13 +115,56 @@ class Date__View(QtWidgets.QWidget):
 
 
 class Calendar__View(QtWidgets.QWidget):
+    '''
+        A calendar view is composed by three elements, a container, a calendar grid,
+        a calendar header bar.
+    '''
+    class Container(QtWidgets.QWidget):
+        def __init__(self, init, parent=None):
+            QtWidgets.QWidget.__init__(self, parent=parent)
+
+            self._layout = QtWidgets.QVBoxLayout()
+            self.setLayout(self._layout)
+
+            self._calendar_header = self.generateCalendarHeader(init)
+            self._layout.addWidget(self._calendar_header)
+
+            self._layout.setContentsMargins(0, 0, 0, 0)
+
+        def addCalendarGrid(self, grid):
+            self._layout.addWidget(grid)
+
+        def generateCalendarHeader(self, init):
+            header = QtWidgets.QWidget()
+            header.setLayout(QtWidgets.QGridLayout())
+
+            days = [
+                (0, 'Lunes'),
+                (1, 'Martes'),
+                (2, 'Miércoles'),
+                (3, 'Jueves'),
+                (4, 'Viernes'),
+                (5, 'Sábado'),
+                (6, 'Domingo'),
+            ]
+            days = deque(days)
+            days.rotate(7 - init)
+
+            for i in range(len(days)):
+                label = QtWidgets.QLabel()
+                label.setText(days[i][1])
+
+                label.setMaximumHeight(15)
+
+                header.layout().addWidget(label, 0, i, alignment=QtCore.Qt.AlignCenter)
+
+            return header
 
     def __init__(self, master, parent=None):
         QtWidgets.QWidget.__init__(self, parent=parent)
         self._master = master
 
-        # Date will organize events one on top of another vertically, so we will use
-        # QVBoxLayout
+        # Calendar will organize dates in a grid manner, so use grid layout
         self._layout = QtWidgets.QGridLayout()
         self.setLayout(self._layout)
 
@@ -128,6 +172,11 @@ class Calendar__View(QtWidgets.QWidget):
         p = self.palette()
         p.setColor(self.backgroundRole(), QtGui.QColor(255, 251, 186))
         self.setPalette(p)
+
+        # The calendar view instance is contained in a parent widget alongside
+        # the calendar header
+        self._container = Calendar__View.Container(self._master.getModel().getType())
+        self._container.addCalendarGrid(self)
 
     def update(self):
         model = self._master.getModel()
@@ -152,3 +201,6 @@ class Calendar__View(QtWidgets.QWidget):
 
     def updateFromModel(self):
         self.update()
+
+    def getContainer(self):
+        return self._container

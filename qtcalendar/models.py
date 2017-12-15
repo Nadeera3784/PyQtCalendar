@@ -95,6 +95,7 @@ class Date__Model:
     TYPE_WEEKEND = 1
     TYPE_HOLYDAY = 2
     TYPE_FREEDAY = 3
+    TYPE_NOT_IN_SNAPSHOT = 4
 
     @staticmethod
     def colorOf(val):
@@ -103,6 +104,7 @@ class Date__Model:
             (Date__Model.TYPE_WEEKEND, (0, 242, 255)),
             (Date__Model.TYPE_HOLYDAY, (0, 242, 255)),
             (Date__Model.TYPE_FREEDAY, (0, 216, 255)),
+            (Date__Model.TYPE_NOT_IN_SNAPSHOT, (219, 219, 219)),
         ]
 
         for d, c in color_list:
@@ -148,7 +150,43 @@ class Calendar__Model:
     MAX_DIM_X = 7
     MAX_DIM_Y = 6
 
-    def __init__(self, master, ctype=TYPE_SUNDAY_LEADING):
+    @staticmethod
+    def dayOf(date, init):
+        '''
+            Returns the day of the week of a given date and the position
+            of that day in the calendar grid.
+            The returned text value of the day is recovered from the stringer module.
+        '''
+        days = [
+            (0, 'Lunes'),
+            (1, 'Martes'),
+            (2, 'Miércoles'),
+            (3, 'Jueves'),
+            (4, 'Viernes'),
+            (5, 'Sábado'),
+            (6, 'Domingo'),
+        ]
+
+        # Get the day of the week of the selected date
+        datetuple = tuple([int(s) for s in str(date).split(' ')[0].split('-')])
+        day = days[list(zip(*days))[0].index(calendar.weekday(*datetuple))][1]
+
+        # Horizontal position in the grid is deduced from the selected leading day
+        days_dq = deque(days)
+        days_dq.rotate(7 - init)
+        pos_x = list(zip(*days_dq))[0].index(calendar.weekday(*datetuple))
+
+        # Vertical position is deduced from the selected leading day and the
+        # day of the first date of that month
+        firstmonthday = (datetuple[0], datetuple[1], 1)
+        fday = list(zip(*days_dq))[0].index(calendar.weekday(*firstmonthday))
+
+        pos_y = ceil((fday + date.day) / 7) - 1
+
+        # Return the place in the calendar grid depending on the offset
+        return day, pos_x, pos_y
+
+    def __init__(self, master, ctype=TYPE_WEDNESDAY_LEADING):
         '''
             Calendar constructor, a calendar is an array of dates that should
             always be full, thus, initialy an array of empty dates (6x7), is
@@ -171,43 +209,6 @@ class Calendar__Model:
         # Create empty dates from the snapshot
         self._dates = self.generateDefaultDates()
 
-    def dayOf(self, date):
-        '''
-            Returns the day of the week of a given date and the position
-            of that day in the calendar grid.
-            The returned text value of the day is recovered from the stringer module.
-        '''
-        days = [
-            (0, 'Lunes'),
-            (1, 'Martes'),
-            (2, 'Miércoles'),
-            (3, 'Jueves'),
-            (4, 'Viernes'),
-            (5, 'Sábado'),
-            (6, 'Domingo'),
-        ]
-
-        init = self._type
-
-        # Get the day of the week of the selected date
-        datetuple = tuple([int(s) for s in str(date).split(' ')[0].split('-')])
-        day = days[list(zip(*days))[0].index(calendar.weekday(*datetuple))][1]
-
-        # Horizontal position in the grid is deduced from the selected leading day
-        days_dq = deque(days)
-        days_dq.rotate(7 - init)
-        pos_x = list(zip(*days_dq))[0].index(calendar.weekday(*datetuple))
-
-        # Vertical position is deduced from the selected leading day and the
-        # day of the first date of that month
-        firstmonthday = (datetuple[0], datetuple[1], 1)
-        fday = list(zip(*days_dq))[0].index(calendar.weekday(*firstmonthday))
-
-        pos_y = ceil((fday + date.day) / 7) - 1
-
-        # Return the place in the calendar grid depending on the offset
-        return day, pos_x, pos_y
-
     def generateSnapshot(self):
         rt = list()
 
@@ -218,7 +219,7 @@ class Calendar__Model:
         first_day = dt.date(self._month[0], self._month[1], 1)
 
         # Find day of first position in calendar grid
-        offset = self.dayOf(first_day)[1]
+        offset = Calendar__Model.dayOf(first_day, self._type)[1]
         first_day -= dt.timedelta(offset)
 
         # Once first position is encountered, fill the holder array
@@ -256,6 +257,9 @@ class Calendar__Model:
 
     def getDates(self):
         return self._dates
+
+    def getType(self):
+        return self._type
 
     def recalculate(self):
         pass

@@ -47,7 +47,6 @@ elif test_num == 1:
     # Create events
     init_date = dt.date(2017, 11, 30)
     for i in range(31):
-        print(init_date)
         init_date += dt.timedelta(1)
         event = Event(
             dt.datetime(init_date.year, init_date.month, init_date.day, 1, 0, 0),
@@ -71,6 +70,8 @@ elif test_num == 1:
         date.addCalendarEvent(ecalendar)
         date.addCalendarEvent(ecalendar2)
         date.addCalendarEvent(ecalendar3)
+
+        date.changeDateType(4)
 
         cal.addDate(date)
     ui.getMainLayout().addWidget(cal.getView())

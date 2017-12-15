@@ -97,7 +97,7 @@ class Calendar(Element):
         self._view.updateFromModel()
 
     def getView(self):
-        return self._view
+        return self._view.getContainer()
 
     def getModel(self):
         return self._model
