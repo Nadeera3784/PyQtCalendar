@@ -103,7 +103,7 @@ class Calendar(Element):
         return self._model
 
     def addDate(self, date):
-        self._model.addDate(Date(date))
+        self._model.addDate(date)
         self._view.updateFromModel()
 
     def createDate(self, date):
