@@ -76,6 +76,7 @@ class Date__View(QtWidgets.QWidget):
     def update(self):
         model = self._master.getModel()
         date = model.getDate().__str__()
+
         date = date.split(' ')[0].split('-')[2]
 
         # Remove leading zero
@@ -131,7 +132,20 @@ class Calendar__View(QtWidgets.QWidget):
     def update(self):
         model = self._master.getModel()
 
+        # Get max height and max width
+        max_h, max_w = 0, 0
         for date in model.getDates():
+            if max_h < date.getView().sizeHint().height():
+                max_h = date.getView().sizeHint().height()
+
+            if max_w < date.getView().sizeHint().width():
+                max_w = date.getView().sizeHint().width()
+
+        # Resize the elements with the maximum values
+        for date in model.getDates():
+            date.getView().setMinimumWidth(max_w)
+            date.getView().setMinimumHeight(max_h)
+
             self._layout.addWidget(
                 date.getView(),
                 *model.posInSnapshot(date.getModel().getDate()))
