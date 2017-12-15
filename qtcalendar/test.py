@@ -41,7 +41,38 @@ if test_num == 0:
     ui.getMainLayout().addWidget(date.getView())
 elif test_num == 1:
     print('Test 1')
+
     cal = Calendar()
+
+    # Create events
+    init_date = dt.date(2017, 11, 30)
+    for i in range(31):
+        print(init_date)
+        init_date += dt.timedelta(1)
+        event = Event(
+            dt.datetime(init_date.year, init_date.month, init_date.day, 1, 0, 0),
+            dt.datetime(init_date.year, init_date.month, init_date.day, 10, 0, 0))
+        event2 = Event(
+            dt.datetime(init_date.year, init_date.month, init_date.day, 3, 0, 0),
+            dt.datetime(init_date.year, init_date.month, init_date.day, 12, 0, 0),
+            fulfillment=0.5)
+        event3 = Event(
+            dt.datetime(init_date.year, init_date.month, init_date.day, 5, 0, 0),
+            dt.datetime(init_date.year, init_date.month, init_date.day, 20, 0, 0),
+            fulfillment=0.9)
+        ecalendar = EventInCalendar()
+        ecalendar.setEvent(event)
+        ecalendar2 = EventInCalendar()
+        ecalendar2.setEvent(event2)
+        ecalendar3 = EventInCalendar()
+        ecalendar3.setEvent(event3)
+
+        date = Date(init_date)
+        date.addCalendarEvent(ecalendar)
+        date.addCalendarEvent(ecalendar2)
+        date.addCalendarEvent(ecalendar3)
+
+        cal.addDate(date)
     ui.getMainLayout().addWidget(cal.getView())
 
 # Start UI
