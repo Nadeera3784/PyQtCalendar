@@ -71,7 +71,7 @@ elif test_num == 1:
         date.addCalendarEvent(ecalendar2)
         date.addCalendarEvent(ecalendar3)
 
-        date.changeDateType(4)
+        date.changeDateType(0)
 
         cal.addDate(date)
     ui.getMainLayout().addWidget(cal.getView())
