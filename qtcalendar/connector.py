@@ -3,14 +3,17 @@ import datetime as dt
 import requests
 
 
-class Connector:
+class HolidayDownloader:
+    '''
+        Class for parsing holidays of a given country using the google api
+    '''
     instance = None
 
     @staticmethod
-    def getInstance(self):
-        if Connector.instance is None:
-            Connector.instance = Connector()
-        return Connector.instance
+    def getInstance():
+        if HolidayDownloader.instance is None:
+            HolidayDownloader.instance = HolidayDownloader()
+        return HolidayDownloader.instance
 
     def __init__(self):
         self.holidays = None
@@ -39,11 +42,11 @@ class Connector:
 
         return holidays_dates
 
-    def isHoliday(self, date):
-        pass
+    def getHolidayDates(self):
+        return [dt.datetime.strptime(i, '%Y-%m-%d').date() for i in self.holidays]
 
 
 if __name__ == '__main__':
-    c = Connector()
-    for i in c.holidays:
+    c = HolidayDownloader()
+    for i in c.getHolidayDates():
         print(i)
