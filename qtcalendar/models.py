@@ -186,7 +186,7 @@ class Calendar__Model:
         # Return the place in the calendar grid depending on the offset
         return day, pos_x, pos_y
 
-    def __init__(self, master, ctype=TYPE_WEDNESDAY_LEADING):
+    def __init__(self, master, ctype=TYPE_SUNDAY_LEADING):
         '''
             Calendar constructor, a calendar is an array of dates that should
             always be full, thus, initialy an array of empty dates (6x7), is
