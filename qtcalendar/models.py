@@ -2,6 +2,7 @@
     Models for QtWidgets
 '''
 from collections import deque
+from connector import HolidayDownloader
 from math import ceil
 import datetime as dt
 import calendar
@@ -95,16 +96,16 @@ class Date__Model:
     TYPE_WEEKEND = 1
     TYPE_HOLYDAY = 2
     TYPE_FREEDAY = 3
-    TYPE_NOT_IN_SNAPSHOT = 4
+    TYPE_GRAYDAY = 4
 
     @staticmethod
     def colorOf(val):
         color_list = [
-            (Date__Model.TYPE_WEEKDAY, (163, 163, 163)),
-            (Date__Model.TYPE_WEEKEND, (0, 242, 255)),
-            (Date__Model.TYPE_HOLYDAY, (0, 242, 255)),
+            (Date__Model.TYPE_WEEKDAY, (255, 255, 255)),
+            (Date__Model.TYPE_WEEKEND, (183, 183, 183)),
+            (Date__Model.TYPE_HOLYDAY, (183, 183, 183)),
             (Date__Model.TYPE_FREEDAY, (0, 216, 255)),
-            (Date__Model.TYPE_NOT_IN_SNAPSHOT, (219, 219, 219)),
+            (Date__Model.TYPE_GRAYDAY, (219, 219, 219)),
         ]
 
         for d, c in color_list:
@@ -150,6 +151,9 @@ class Calendar__Model:
     MAX_DIM_X = 7
     MAX_DIM_Y = 6
 
+    WEEKENDS = [5, 6]
+    HOLIDAYS = HolidayDownloader.getInstance().getHolidayDates()
+
     @staticmethod
     def dayOf(date, init):
         '''
@@ -169,7 +173,7 @@ class Calendar__Model:
 
         # Get the day of the week of the selected date
         datetuple = tuple([int(s) for s in str(date).split(' ')[0].split('-')])
-        day = days[list(zip(*days))[0].index(calendar.weekday(*datetuple))][1]
+        day = days[list(zip(*days))[0].index(calendar.weekday(*datetuple))][0]
 
         # Horizontal position in the grid is deduced from the selected leading day
         days_dq = deque(days)
@@ -232,14 +236,35 @@ class Calendar__Model:
     def generateDefaultDates(self):
         rt = list()
         for date in self._snapshot:
-            rt.append(self._master.createDate(date))
+            created_date = self._master.createDate(date)
+            self.setDateType(created_date)
+            rt.append(created_date)
         return rt
 
     def addDate(self, date):
         if self._month is not None:
             if date.getModel().getDate() in self._snapshot:
                 index = self._snapshot.index(date.getModel().getDate())
+                self.setDateType(date)
                 self._dates[index] = date
+
+    def setDateType(self, date):
+        current_type = date.getModel().getDateType(numeric=True)
+        deduced_type = Date__Model.TYPE_WEEKDAY
+
+        dt_date = date.getModel().getDate()
+
+        if Calendar__Model.dayOf(dt_date, self._type)[0] in Calendar__Model.WEEKENDS:
+            deduced_type = Date__Model.TYPE_WEEKEND
+        if dt_date in Calendar__Model.HOLIDAYS:
+            deduced_type = Date__Model.TYPE_HOLYDAY
+        if (dt_date.year, dt_date.month) != self._month:
+            deduced_type = Date__Model.TYPE_GRAYDAY
+
+        if current_type < deduced_type:
+            current_type = deduced_type
+
+        date.changeDateType(current_type)
 
     def setMonth(self, month):
         self._month = month
