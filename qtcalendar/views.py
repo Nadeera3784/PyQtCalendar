@@ -120,12 +120,14 @@ class Calendar__View(QtWidgets.QWidget):
         a calendar header bar.
     '''
     class Container(QtWidgets.QWidget):
-        def __init__(self, init, parent=None):
+        def __init__(self, master, parent=None):
             QtWidgets.QWidget.__init__(self, parent=parent)
+            self._master = master
 
             self._layout = QtWidgets.QVBoxLayout()
             self.setLayout(self._layout)
 
+            init = self._master.getModel().getType()
             self._calendar_header = self.generateCalendarHeader(init)
             self._layout.addWidget(self._calendar_header)
 
@@ -138,21 +140,14 @@ class Calendar__View(QtWidgets.QWidget):
             header = QtWidgets.QWidget()
             header.setLayout(QtWidgets.QGridLayout())
 
-            days = [
-                (0, 'Lunes'),
-                (1, 'Martes'),
-                (2, 'Miércoles'),
-                (3, 'Jueves'),
-                (4, 'Viernes'),
-                (5, 'Sábado'),
-                (6, 'Domingo'),
-            ]
+            days = [self._master.getDataTree()['str']['days'][i][1] for i in range(7)]
+
             days = deque(days)
             days.rotate(7 - init)
 
             for i in range(len(days)):
                 label = QtWidgets.QLabel()
-                label.setText(days[i][1])
+                label.setText(str(days[i]))
 
                 label.setMaximumHeight(15)
 
@@ -175,7 +170,7 @@ class Calendar__View(QtWidgets.QWidget):
 
         # The calendar view instance is contained in a parent widget alongside
         # the calendar header
-        self._container = Calendar__View.Container(self._master.getModel().getType())
+        self._container = Calendar__View.Container(self._master)
         self._container.addCalendarGrid(self)
 
     def update(self):
