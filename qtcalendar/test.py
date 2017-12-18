@@ -27,9 +27,6 @@ lead_day = Calendar__Model.TYPE_SUNDAY_LEADING
 # Create the calendar instance
 cal = Calendar(holidays=holidays, leading_day=lead_day)
 
-# Add the calendar widget to your application holder
-ui.getMainLayout().addWidget(cal.getView())
-
 
 '''
     The previous code should give you a working calendar with no events (already
@@ -53,10 +50,13 @@ description = {
     'people': 202,
     'init-date': dt.datetime.combine(date_selected, dt.time(17, 0, 0)),
     'end-date': dt.datetime.combine(next_day, dt.time(1, 0, 0)),
-    'fulfillment': 0.0
+    'fulfillment': 1.0
 }
 
 cal.createEvent(description)
+
+# Add the calendar widget to your application holder
+ui.getMainLayout().addWidget(cal.getView())
 
 # Start UI
 ui()
