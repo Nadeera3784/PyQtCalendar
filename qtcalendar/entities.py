@@ -2,6 +2,9 @@ import models
 import views
 
 
+DEFAULT_DATATREE = dict()
+
+
 class Element:
     pass
 
@@ -100,8 +103,12 @@ class Calendar(Element):
                        format and the required keys.
     '''
 
-    def __init__(self):
-        self._model = models.Calendar__Model(self)
+    def __init__(
+            self,
+            holidays=list(),
+            leading_day=models.Calendar__Model.TYPE_SUNDAY_LEADING,
+            datatree=DEFAULT_DATATREE):
+        self._model = models.Calendar__Model(self, ctype=leading_day, holidays=holidays)
         self._view = views.Calendar__View(self)
 
         self._view.updateFromModel()
