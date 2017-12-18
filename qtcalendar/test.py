@@ -3,7 +3,7 @@
     work out your way to your own implementation.
 
     Note: imports should be at the beginning of the file, I will put them through out it
-    just so you now explicitly what is used for what, and what you can avoid.
+    just so you know explicitly what is used for what, and what you can avoid.
 '''
 
 from example.holder.minimal import MinimalHolder
