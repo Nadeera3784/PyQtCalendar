@@ -2,7 +2,6 @@
     Models for QtWidgets
 '''
 from collections import deque
-from example.connector import HolidayDownloader
 from math import ceil
 import datetime as dt
 import calendar
@@ -154,25 +153,17 @@ class Calendar__Model:
     WEEKENDS = [5, 6]
 
     @staticmethod
-    def dayOf(date, init):
+    def dayOf(date, init, datatree):
         '''
             Returns the day of the week of a given date and the position
             of that day in the calendar grid.
             The returned text value of the day is recovered from the stringer module.
         '''
-        days = [
-            (0, 'Lunes'),
-            (1, 'Martes'),
-            (2, 'Miércoles'),
-            (3, 'Jueves'),
-            (4, 'Viernes'),
-            (5, 'Sábado'),
-            (6, 'Domingo'),
-        ]
+        days = datatree['str']['days']
 
         # Get the day of the week of the selected date
         datetuple = tuple([int(s) for s in str(date).split(' ')[0].split('-')])
-        day = days[list(zip(*days))[0].index(calendar.weekday(*datetuple))][0]
+        day = days[list(zip(*days))[0].index(calendar.weekday(*datetuple))][1]
 
         # Horizontal position in the grid is deduced from the selected leading day
         days_dq = deque(days)
@@ -189,7 +180,7 @@ class Calendar__Model:
         # Return the place in the calendar grid depending on the offset
         return day, pos_x, pos_y
 
-    def __init__(self, master, ctype=TYPE_SUNDAY_LEADING, holidays=list()):
+    def __init__(self, master, datatree, ctype=TYPE_SUNDAY_LEADING, holidays=list()):
         '''
             Calendar constructor, a calendar is an array of dates that should
             always be full, thus, initialy an array of empty dates (6x7), is
@@ -204,6 +195,9 @@ class Calendar__Model:
         self._type = ctype
 
         self._holidays = holidays
+
+        # Get data source
+        self._datatree = datatree
 
         # Assume month as current month
         self._month = tuple([dt.date.today().year, dt.date.today().month])
@@ -224,7 +218,7 @@ class Calendar__Model:
         first_day = dt.date(self._month[0], self._month[1], 1)
 
         # Find day of first position in calendar grid
-        offset = Calendar__Model.dayOf(first_day, self._type)[1]
+        offset = Calendar__Model.dayOf(first_day, self._type, self._datatree)[1]
         first_day -= dt.timedelta(offset)
 
         # Once first position is encountered, fill the holder array
@@ -254,8 +248,9 @@ class Calendar__Model:
         deduced_type = Date__Model.TYPE_WEEKDAY
 
         dt_date = date.getModel().getDate()
+        dt_tuple = (dt_date.year, dt_date.month, dt_date.day)
 
-        if Calendar__Model.dayOf(dt_date, self._type)[0] in Calendar__Model.WEEKENDS:
+        if calendar.weekday(*dt_tuple) in Calendar__Model.WEEKENDS:
             deduced_type = Date__Model.TYPE_WEEKEND
         if dt_date in self._holidays:
             deduced_type = Date__Model.TYPE_HOLYDAY
@@ -267,12 +262,19 @@ class Calendar__Model:
 
         date.changeDateType(current_type)
 
+    def _update(self):
+        pass
+
     def setMonth(self, month):
         self._month = month
-        self._recalculate()
+        self._update()
 
-    def setHolydays(self, source):
-        pass
+    def setDataTree(self, datatree):
+        self._datatree = datatree
+        self._update()
+
+    def getDataTree(self):
+        return self._datatree
 
     def posInSnapshot(self, date):
         i = self._snapshot.index(date)
@@ -286,6 +288,3 @@ class Calendar__Model:
 
     def getType(self):
         return self._type
-
-    def recalculate(self):
-        pass
