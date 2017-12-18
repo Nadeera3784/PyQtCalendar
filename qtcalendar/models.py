@@ -64,9 +64,9 @@ class EventInCalendar__Model:
 
 class Event__Model:
     class Place:
-        def __init__(self):
-            self.name = 'NA'
-            self.people = 0
+        def __init__(self, name='NA', people=0):
+            self.name = name
+            self.people = people
 
         def __str__(self):
             return self.name
