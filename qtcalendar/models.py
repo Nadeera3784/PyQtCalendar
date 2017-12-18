@@ -2,7 +2,7 @@
     Models for QtWidgets
 '''
 from collections import deque
-from connector import HolidayDownloader
+from example.connector import HolidayDownloader
 from math import ceil
 import datetime as dt
 import calendar
@@ -101,11 +101,11 @@ class Date__Model:
     @staticmethod
     def colorOf(val):
         color_list = [
-            (Date__Model.TYPE_WEEKDAY, (255, 255, 255)),
+            (Date__Model.TYPE_WEEKDAY, (219, 219, 219)),
             (Date__Model.TYPE_WEEKEND, (183, 183, 183)),
             (Date__Model.TYPE_HOLYDAY, (183, 183, 183)),
             (Date__Model.TYPE_FREEDAY, (0, 216, 255)),
-            (Date__Model.TYPE_GRAYDAY, (219, 219, 219)),
+            (Date__Model.TYPE_GRAYDAY, (255, 255, 255)),
         ]
 
         for d, c in color_list:

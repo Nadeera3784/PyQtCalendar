@@ -1,4 +1,4 @@
-from secrets import CREDENTIALS
+from example.secrets import CREDENTIALS
 import datetime as dt
 import requests
 

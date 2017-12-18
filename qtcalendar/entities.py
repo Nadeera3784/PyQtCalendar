@@ -88,6 +88,16 @@ class Date(Element):
 class Calendar(Element):
     '''
         Calendar superclass, manages Dates and the overall language pack.
+        To get the best behavour, you should expose this interface to the following
+        information:
+          * Holiday list: list of dates (datetime.date) of the holidays of your country
+                          (an example to generate such a list is given in controllers.py)
+          * Leading day of your calendar: by default leading day is sunday, use the
+                                          variables Calendar__Model.TYPE_XX_LEADING to
+                                          set up the leading day in a uniform manner.
+          * Datatrees: the information the user is exposed to is given via a datatree,
+                       we are not responsible by it, we only give you the datatree
+                       format and the required keys.
     '''
 
     def __init__(self):

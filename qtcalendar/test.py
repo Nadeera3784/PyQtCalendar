@@ -1,4 +1,4 @@
-from holder.minimal import MinimalHolder
+from example.holder.minimal import MinimalHolder
 from entities import EventInCalendar, Date, Event, Calendar
 import datetime as dt
 
