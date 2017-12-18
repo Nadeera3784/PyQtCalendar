@@ -2,7 +2,7 @@
     Test module, so that you know how this works. Look at it, read the comments and
     work out your way to your own implementation.
 
-    Note: imports should be in the header of the file, I will put them through out it
+    Note: imports should be at the beginning of the file, I will put them through out it
     just so you now explicitly what is used for what, and what you can avoid.
 '''
 
