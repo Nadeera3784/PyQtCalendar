@@ -1,3 +1,4 @@
+import datetime as dt
 import models
 import views
 
@@ -33,9 +34,21 @@ class Element:
 
 
 class Event:
-    def __init__(self, init_date, end_date, fulfillment=0.0):
+    @staticmethod
+    def getEventFromDescription(description):
+        event = Event(
+            description['place'],
+            description['people'],
+            description['init-date'],
+            description['end-date'],
+            description['fulfillment'])
+
+        return event
+
+    def __init__(self, name, people, init_date, end_date, fulfillment=0.0):
+        place = models.Event__Model.Place(name=name, people=people)
         self._model = models.Event__Model(
-            init_date, end_date, models.Event__Model.Place(), fulfillment)
+            init_date, end_date, place, fulfillment)
 
     def getModel(self):
         return self._model
@@ -50,10 +63,11 @@ class EventInCalendar(Element):
         * controller: user interaction
     '''
 
-    def __init__(self):
+    def __init__(self, description):
         self._model = models.EventInCalendar__Model(self)
         self._view = views.EventInCalendar__View(self)
-        self._event = None
+
+        self.setEvent(Event.getEventFromDescription(description))
 
     def getView(self):
         return self._view
@@ -70,6 +84,37 @@ class EventInCalendar(Element):
         # Recursively set the event
         self._model.setEvent(event)
         self._view.updateFromModel()
+
+    def getDateSpan(self):
+        init_date = self._event.getModel().getInitDate()
+        end_date = self._event.getModel().getEndDate()
+
+        print(init_date, end_date)
+
+        # Find the day span
+        diff = end_date - init_date
+        diff = diff.days
+
+        # The days before are counted in intervals of 24 hours, if the situation occurs
+        # that init_date.time() > end_date.time() but the difference is less than
+        # 24 hours, we now we missed a day, this situation occurs when an event starts
+        # at night and end early in the morning.
+        time1 = dt.datetime.combine(dt.date.today(), init_date.time())
+        time2 = dt.datetime.combine(dt.date.today(), end_date.time())
+
+        difference = time1 - time2
+        if init_date.time() > end_date.time() and abs(difference.days) < 1:
+            diff += 1
+
+        print(diff)
+        print(difference)
+
+        # Build the span array
+        span = []
+        for i in range(diff + 1):
+            span.append(init_date + dt.timedelta(i))
+
+        return span
 
     def __lt__(self, other):
         return self.getEvent().getModel().getInitDate() \
@@ -156,3 +201,16 @@ class Calendar(Element):
 
     def createDate(self, date):
         return Date(date)
+
+    def createEvent(self, description):
+        '''
+            Creates Event, EventInCalendar, Date and assigns the EventInCalendar to
+            the Date. If the event spans more than one day, two Date objects are
+            assigned the Event.
+        '''
+
+        # Create the event in calendar
+        event = EventInCalendar(description)
+
+        # Get the dates for the event
+        print(event.getDateSpan())
