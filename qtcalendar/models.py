@@ -152,7 +152,6 @@ class Calendar__Model:
     MAX_DIM_Y = 6
 
     WEEKENDS = [5, 6]
-    HOLIDAYS = HolidayDownloader.getInstance().getHolidayDates()
 
     @staticmethod
     def dayOf(date, init):
@@ -190,7 +189,7 @@ class Calendar__Model:
         # Return the place in the calendar grid depending on the offset
         return day, pos_x, pos_y
 
-    def __init__(self, master, ctype=TYPE_SUNDAY_LEADING):
+    def __init__(self, master, ctype=TYPE_SUNDAY_LEADING, holidays=list()):
         '''
             Calendar constructor, a calendar is an array of dates that should
             always be full, thus, initialy an array of empty dates (6x7), is
@@ -203,6 +202,8 @@ class Calendar__Model:
         '''
         self._master = master
         self._type = ctype
+
+        self._holidays = holidays
 
         # Assume month as current month
         self._month = tuple([dt.date.today().year, dt.date.today().month])
@@ -256,7 +257,7 @@ class Calendar__Model:
 
         if Calendar__Model.dayOf(dt_date, self._type)[0] in Calendar__Model.WEEKENDS:
             deduced_type = Date__Model.TYPE_WEEKEND
-        if dt_date in Calendar__Model.HOLIDAYS:
+        if dt_date in self._holidays:
             deduced_type = Date__Model.TYPE_HOLYDAY
         if (dt_date.year, dt_date.month) != self._month:
             deduced_type = Date__Model.TYPE_GRAYDAY
