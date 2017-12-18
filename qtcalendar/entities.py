@@ -35,7 +35,7 @@ class Element:
 
 class Event:
     @staticmethod
-    def getEventFromDescription(description):
+    def createEventFromDescription(description):
         event = Event(
             description['place'],
             description['people'],
@@ -46,50 +46,22 @@ class Event:
         return event
 
     def __init__(self, name, people, init_date, end_date, fulfillment=0.0):
+
         place = models.Event__Model.Place(name=name, people=people)
         self._model = models.Event__Model(
             init_date, end_date, place, fulfillment)
 
-    def getModel(self):
-        return self._model
-
-
-class EventInCalendar(Element):
-    '''
-        EventInCalendar interface intended for usage in Date class, or for subclassing.
-        It contains model, view and controller of EventInCalendar:
-        * model: holds the information of EventInCalendar (displayed or not)
-        * view: visual classes and mechanisms
-        * controller: user interaction
-    '''
-
-    def __init__(self, description):
-        self._model = models.EventInCalendar__Model(self)
-        self._view = views.EventInCalendar__View(self)
-
-        self.setEvent(Event.getEventFromDescription(description))
-
-    def getView(self):
-        return self._view
+        self._calendar_events = self.createCalendarEvents()
 
     def getModel(self):
         return self._model
 
-    def getEvent(self):
-        return self._event
-
-    def setEvent(self, event):
-        self._event = event
-
-        # Recursively set the event
-        self._model.setEvent(event)
-        self._view.updateFromModel()
+    def getCalendarEvents(self):
+        return self._calendar_events
 
     def getDateSpan(self):
-        init_date = self._event.getModel().getInitDate()
-        end_date = self._event.getModel().getEndDate()
-
-        print(init_date, end_date)
+        init_date = self.getModel().getInitDate()
+        end_date = self.getModel().getEndDate()
 
         # Find the day span
         diff = end_date - init_date
@@ -106,15 +78,53 @@ class EventInCalendar(Element):
         if init_date.time() > end_date.time() and abs(difference.days) < 1:
             diff += 1
 
-        print(diff)
-        print(difference)
-
         # Build the span array
         span = []
         for i in range(diff + 1):
-            span.append(init_date + dt.timedelta(i))
+            span.append(init_date.date() + dt.timedelta(i))
 
         return span
+
+    def createCalendarEvents(self):
+        span = self.getDateSpan()
+        eics = list()
+
+        for d in span:
+            eics.append((d, EventInCalendar(self)))
+
+        return eics
+
+
+class EventInCalendar(Element):
+    '''
+        EventInCalendar interface intended for usage in Date class, or for subclassing.
+        It contains model, view and controller of EventInCalendar:
+        * model: holds the information of EventInCalendar (displayed or not)
+        * view: visual classes and mechanisms
+        * controller: user interaction
+    '''
+
+    def __init__(self, event):
+        self._model = models.EventInCalendar__Model(self)
+        self._view = views.EventInCalendar__View(self)
+
+        self.setEvent(event)
+
+    def getView(self):
+        return self._view
+
+    def getModel(self):
+        return self._model
+
+    def getEvent(self):
+        return self._event
+
+    def setEvent(self, event):
+        self._event = event
+
+        # Recursively set the event
+        self._model.setEvent(event)
+        self._view.updateFromModel()
 
     def __lt__(self, other):
         return self.getEvent().getModel().getInitDate() \
@@ -210,7 +220,10 @@ class Calendar(Element):
         '''
 
         # Create the event in calendar
-        event = EventInCalendar(description)
+        event = Event.createEventFromDescription(description)
 
-        # Get the dates for the event
-        print(event.getDateSpan())
+        # An event may hold several calendar events if it spans across multiple dates
+        for d, eic in event.getCalendarEvents():
+            date = Date(d)
+            date.addCalendarEvent(eic)
+            self.addDate(date)
