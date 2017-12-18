@@ -9,7 +9,6 @@
 from example.holder.minimal import MinimalHolder
 from entities import Calendar
 
-
 ui = MinimalHolder()
 
 '''
@@ -30,6 +29,34 @@ cal = Calendar(holidays=holidays, leading_day=lead_day)
 
 # Add the calendar widget to your application holder
 ui.getMainLayout().addWidget(cal.getView())
+
+
+'''
+    The previous code should give you a working calendar with no events (already
+    displayed). Now lets add an event in a date
+    of our choice. For that we will have to assign a minimal description for our
+    event, the description contains:
+     * place: the name of the place
+     * people: amount of people going
+     * init-date: datetime
+     * end-date: datetime
+     * fulfillment: how ready is the event
+'''
+import datetime as dt
+
+date_selected = dt.date.today()
+next_day = date_selected + dt.timedelta(1)
+
+# Suppose our event starts at 17:00 and ends at 3:00 of the next day
+description = {
+    'place': 'Disney',
+    'people': 202,
+    'init-date': dt.datetime.combine(date_selected, dt.time(17, 0, 0)),
+    'end-date': dt.datetime.combine(next_day, dt.time(1, 0, 0)),
+    'fulfillment': 0.0
+}
+
+cal.createEvent(description)
 
 # Start UI
 ui()
