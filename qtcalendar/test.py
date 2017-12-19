@@ -42,14 +42,14 @@ cal = Calendar(holidays=holidays, leading_day=lead_day)
 import datetime as dt
 
 date_selected = dt.date.today()
-next_day = date_selected + dt.timedelta(1)
+next_day = date_selected + dt.timedelta(7)
 
 # Suppose our event starts at 17:00 and ends at 3:00 of the next day
 description = {
     'place': 'Disney',
     'people': 202,
     'init-date': dt.datetime.combine(date_selected, dt.time(17, 0, 0)),
-    'end-date': dt.datetime.combine(next_day, dt.time(1, 0, 0)),
+    'end-date': dt.datetime.combine(next_day, dt.time(3, 0, 0)),
     'fulfillment': 1.0
 }
 

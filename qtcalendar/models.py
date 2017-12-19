@@ -13,13 +13,17 @@ class EventInCalendar__Model:
         def getDefault():
             return EventInCalendar__Model.Text()
 
-        def __init__(self, event=None):
+        def __init__(self, event=None, overflow=False):
             if event is None:
                 self.init_date = dt.datetime(1, 1, 1)
                 self.end_date = dt.datetime(9999, 12, 31)
                 self.place = Event__Model.Place()
             else:
-                self.init_date = event.getInitDate()
+                if overflow:
+                    self.init_date = dt.datetime.combine(
+                        event.getInitDate().date(), dt.time(0, 0, 0))
+                else:
+                    self.init_date = event.getInitDate()
                 self.end_date = event.getEndDate()
                 self.place = event.getPlace()
 
@@ -42,8 +46,9 @@ class EventInCalendar__Model:
             if lw <= val and hi > val:
                 return c
 
-    def __init__(self, master):
+    def __init__(self, master, overflow):
         self._fulfillment = 0.0
+        self._overflow = overflow
         self._master = master
         self._event = None
 
@@ -59,7 +64,7 @@ class EventInCalendar__Model:
     def __str__(self):
         if self._event is None:
             return EventInCalendar__Model.Text().__str__()
-        return EventInCalendar__Model.Text(self._event).__str__()
+        return EventInCalendar__Model.Text(self._event, self._overflow).__str__()
 
 
 class Event__Model:

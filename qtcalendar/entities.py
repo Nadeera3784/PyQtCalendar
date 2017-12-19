@@ -75,7 +75,9 @@ class Event:
         time2 = dt.datetime.combine(dt.date.today(), end_date.time())
 
         difference = time1 - time2
+        overflow = False
         if init_date.time() > end_date.time() and abs(difference.days) < 1:
+            overflow = True
             diff += 1
 
         # Build the span array
@@ -83,14 +85,16 @@ class Event:
         for i in range(diff + 1):
             span.append(init_date.date() + dt.timedelta(i))
 
-        return span
+        return overflow, span
 
     def createCalendarEvents(self):
-        span = self.getDateSpan()
+        overflow, span = self.getDateSpan()
         eics = list()
 
         for d in span:
             eics.append((d, EventInCalendar(self)))
+
+        eics[-1] = (eics[-1][0], EventInCalendar(self, overflow=overflow))
 
         return eics
 
@@ -104,8 +108,8 @@ class EventInCalendar(Element):
         * controller: user interaction
     '''
 
-    def __init__(self, event):
-        self._model = models.EventInCalendar__Model(self)
+    def __init__(self, event, overflow=False):
+        self._model = models.EventInCalendar__Model(self, overflow)
         self._view = views.EventInCalendar__View(self)
 
         self.setEvent(event)
