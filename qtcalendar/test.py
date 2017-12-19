@@ -42,7 +42,7 @@ cal = Calendar(holidays=holidays, leading_day=lead_day)
 import datetime as dt
 
 date_selected = dt.date.today()
-next_day = date_selected + dt.timedelta(7)
+next_day = date_selected + dt.timedelta(3)
 
 # Suppose our event starts at 17:00 and ends at 3:00 of the next day
 description = {
@@ -53,7 +53,18 @@ description = {
     'fulfillment': 1.0
 }
 
+date_selected_2 = dt.date(2017, 12, 1)
+next_day_2 = date_selected_2 + dt.timedelta(1)
+description_2 = {
+    'place': 'Universal',
+    'people': 202,
+    'init-date': dt.datetime.combine(date_selected_2, dt.time(17, 0, 0)),
+    'end-date': dt.datetime.combine(next_day_2, dt.time(3, 0, 0)),
+    'fulfillment': 0.5
+}
+
 cal.createEvent(description)
+cal.createEvent(description_2)
 
 # Add the calendar widget to your application holder
 ui.getMainLayout().addWidget(cal.getView())
