@@ -185,7 +185,7 @@ class Calendar__Model:
         # Return the place in the calendar grid depending on the offset
         return day, pos_x, pos_y
 
-    def __init__(self, master, datatree, ctype=TYPE_SUNDAY_LEADING, holidays=list()):
+    def __init__(self, master, ctype=TYPE_SUNDAY_LEADING, holidays=list()):
         '''
             Calendar constructor, a calendar is an array of dates that should
             always be full, thus, initialy an array of empty dates (6x7), is
@@ -200,9 +200,6 @@ class Calendar__Model:
         self._type = ctype
 
         self._holidays = holidays
-
-        # Get data source
-        self._datatree = datatree
 
         # Assume month as current month
         self._month = tuple([dt.date.today().year, dt.date.today().month])
@@ -223,7 +220,7 @@ class Calendar__Model:
         first_day = dt.date(self._month[0], self._month[1], 1)
 
         # Find day of first position in calendar grid
-        offset = Calendar__Model.dayOf(first_day, self._type, self._datatree)[1]
+        offset = Calendar__Model.dayOf(first_day, self._type, self._master.getDataTree())[1]
         first_day -= dt.timedelta(offset)
 
         # Once first position is encountered, fill the holder array
