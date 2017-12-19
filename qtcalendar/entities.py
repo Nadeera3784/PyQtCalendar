@@ -209,6 +209,10 @@ class Calendar(Element):
         self._model.addDate(date)
         self._view.updateFromModel()
 
+    def addEventInCalendar(self, d, eic):
+        self._model.addEventInCalendar(d, eic)
+        self._view.updateFromModel()
+
     def createDate(self, date):
         return Date(date)
 
@@ -224,6 +228,4 @@ class Calendar(Element):
 
         # An event may hold several calendar events if it spans across multiple dates
         for d, eic in event.getCalendarEvents():
-            date = Date(d)
-            date.addCalendarEvent(eic)
-            self.addDate(date)
+            self.addEventInCalendar(d, eic)
