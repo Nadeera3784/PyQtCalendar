@@ -70,7 +70,7 @@ class Event:
 
         # The days before are counted in intervals of 24 hours, if the situation occurs
         # that init_date.time() > end_date.time() but the difference is less than
-        # 24 hours, we now we missed a day, this situation occurs when an event starts
+        # 24 hours, we know we missed a day, this situation occurs when an event starts
         # at night and end early in the morning.
         time1 = dt.datetime.combine(dt.date.today(), init_date.time())
         time2 = dt.datetime.combine(dt.date.today(), end_date.time())
