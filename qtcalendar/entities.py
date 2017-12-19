@@ -1,4 +1,5 @@
 import datetime as dt
+import controllers
 import models
 import views
 
@@ -191,9 +192,13 @@ class Calendar(Element):
             leading_day=models.Calendar__Model.TYPE_SUNDAY_LEADING,
             datatree=DEFAULT_DATATREE):
 
+        # Save events for latter
+        self._events = list()
+
         self._model = models.Calendar__Model(
             self, datatree, ctype=leading_day, holidays=holidays)
         self._view = views.Calendar__View(self)
+        self._controller = controllers.Calendar__Controller(self)
 
         # Set the datatree
         self._model.setDataTree(datatree)
@@ -220,6 +225,15 @@ class Calendar(Element):
     def createDate(self, date):
         return Date(date)
 
+    def getEvents(self):
+        return self._events
+
+    def createEvents(self, events):
+        for event in events:
+            for d, eic in event.getCalendarEvents():
+                self.addEventInCalendar(d, eic)
+        self._view.updateFromModel()
+
     def createEvent(self, description):
         '''
             Creates Event, EventInCalendar, Date and assigns the EventInCalendar to
@@ -233,3 +247,8 @@ class Calendar(Element):
         # An event may hold several calendar events if it spans across multiple dates
         for d, eic in event.getCalendarEvents():
             self.addEventInCalendar(d, eic)
+
+        self._events.append(event)
+
+    def delegate(self, e):
+        self._controller.handleEvent(e)
