@@ -199,3 +199,6 @@ class Calendar__View(QtWidgets.QWidget):
 
     def getContainer(self):
         return self._container
+
+    def mousePressEvent(self, e):
+        self._master.delegate(e)
