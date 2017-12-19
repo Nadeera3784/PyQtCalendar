@@ -4,16 +4,6 @@ import views
 
 
 DEFAULT_DATATREE = {
-    #
-    'colors': {
-        'event-in-calendar': {
-            'fulfillment-0': 'rgb(178, 0, 0)',
-            'fulfillment-1': 'rgb(255, 40, 40)',
-            'fulfillment-2': 'rgb(191, 165, 0)',
-            'fulfillment-3': 'rgb(252, 224, 45)',
-            'fulfillment-4': 'rgb(46, 234, 81)',
-        }
-    },
     'str': {
         'days':
             [
@@ -143,15 +133,19 @@ class Date(Element):
         one on top of the other, organized by init_time.
     '''
 
-    def __init__(self, date):
+    def __init__(self, date, datatree=DEFAULT_DATATREE):
         self._model = models.Date__Model(self, date)
         self._view = views.Date__View(self)
+        self._datatree = datatree
 
     def getView(self):
         return self._view
 
     def getModel(self):
         return self._model
+
+    def getDataTree(self):
+        return self._datatree
 
     def addCalendarEvent(self, eic):
         self._model.addEvent(eic)
@@ -191,12 +185,11 @@ class Calendar(Element):
             leading_day=models.Calendar__Model.TYPE_SUNDAY_LEADING,
             datatree=DEFAULT_DATATREE):
 
-        self._model = models.Calendar__Model(
-            self, datatree, ctype=leading_day, holidays=holidays)
-        self._view = views.Calendar__View(self)
-
         # Set the datatree
-        self._model.setDataTree(datatree)
+        self._datatree = datatree
+
+        self._model = models.Calendar__Model(self, ctype=leading_day, holidays=holidays)
+        self._view = views.Calendar__View(self)
 
         self._view.updateFromModel()
 
@@ -204,7 +197,7 @@ class Calendar(Element):
         return self._view.getContainer()
 
     def getDataTree(self):
-        return self._model.getDataTree()
+        return self._datatree
 
     def getModel(self):
         return self._model
@@ -218,7 +211,7 @@ class Calendar(Element):
         self._view.updateFromModel()
 
     def createDate(self, date):
-        return Date(date)
+        return Date(date, datatree=self._datatree)
 
     def createEvent(self, description):
         '''
