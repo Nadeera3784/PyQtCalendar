@@ -274,11 +274,44 @@ class Calendar__Model:
         date.changeDateType(current_type)
 
     def _update(self):
-        pass
+        self._snapshot = self.generateSnapshot()
+        self._dates = self.generateDefaultDates()
+
+        # Add the required events
+        events = self._master.getEvents()
+        events_to_add = list()
+        for event in events:
+            if event.getModel().getInitDate().date() in self._snapshot:
+                events_to_add.append(event)
+
+        self._master.createEvents(events_to_add)
 
     def setMonth(self, month):
         self._month = month
         self._update()
+
+    def getMonth(self):
+        return self._month
+
+    def monthSubtract(self):
+        month = self._month
+        if month[1] == 1:
+            if month[0] == 1:
+                return month
+            else:
+                return (month[0] - 1, 12)
+        else:
+            return (month[0], month[1] - 1)
+
+    def monthAdd(self):
+        month = self._month
+        if month[1] == 12:
+            if month[0] == 9999:
+                return month
+            else:
+                return (month[0] + 1, 1)
+        else:
+            return (month[0], month[1] + 1)
 
     def setDataTree(self, datatree):
         self._datatree = datatree
